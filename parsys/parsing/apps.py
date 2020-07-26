@@ -6,7 +6,7 @@ class ParsingConfig(AppConfig):
     name = 'parsing'
     verbose_name = 'Парсинг'
 
-    # def ready(self):
-    #     import parsing.signals as signals
-    #     pre_migrate.connect(signals.pre_migrate_copy_opencart_data, sender=self)
-    #     post_migrate.connect(signals.post_migrate_clear_foreignkeys, sender=self)
+    def ready(self):
+        from .signals import pre_migrate_copy_opencart_data, post_migrate_clear_foreignkeys
+        pre_migrate.connect(pre_migrate_copy_opencart_data, sender=self)
+        post_migrate.connect(post_migrate_clear_foreignkeys, sender=self)

@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.sessions.models import Session
-from parsing.data_transfer import copy_data_from_opencart, clear_foreignkeys
+from .data_transfer import copy_data_from_opencart, clear_foreignkeys
 
 
 @receiver(post_save, sender=Session)

@@ -3,7 +3,7 @@
 
 from django.db import connection
 from django.conf import settings
-from parsing.models import \
+from .models import \
     Brand, FileProductMapping, OptionMapping, OptionPriceHistory, ProductPriceHistory, SiteProductMapping, \
     RingoManufacturer, RingoProduct, RingoOptionValueDescription
 import time
