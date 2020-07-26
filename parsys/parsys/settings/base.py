@@ -55,7 +55,8 @@ DJANGO_APPS = [
 ]
 
 APP_APPS = [
-	'opencart.apps.OpencartConfig',
+    'opencart.apps.OpencartConfig',
+    'parsing.apps.ParsingConfig',
 ]
 
 LOCAL_APPS = []
