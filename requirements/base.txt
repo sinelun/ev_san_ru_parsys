@@ -4,3 +4,8 @@ django-environ==0.4.5
 pytz==2020.1
 sqlparse==0.3.1
 mysqlclient==2.0.1
+openpyxl==3.0.3
+pycurl==7.43.0.5
+grab==0.6.41
+lxml==4.5.1
+beautifulsoup4==4.9.1
