@@ -5,19 +5,20 @@ from ..models import Brand
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
     list_display = ('manufacturer_name', 'multiplier',)
-    # ordering = ('manufacturer_name',)
-
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.select_related('manufacturer').order_by('manufacturer__name')
+    list_select_related = ('manufacturer',)
+    list_editable = ('multiplier',)
+    search_fields = ('manufacturer__name',)
+    ordering = ('manufacturer__name',)
+    readonly_fields = ('manufacturer',)
 
     def manufacturer_name(self, obj):
         return obj.manufacturer.name
     manufacturer_name.short_description = 'Бренд'
+    manufacturer_name.admin_order_field = 'manufacturer__name'
 
     def has_add_permission(self, request, obj=None):
         return False
 
-    def has_change_permission(self, request, obj=None):
+    def has_delete_permission(self, request, obj=None):
         return False
 
