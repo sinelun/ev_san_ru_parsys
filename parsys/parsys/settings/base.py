@@ -156,3 +156,22 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = '/files/'
 MEDIA_ROOT = str(ROOT_DIR('files'))
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': ROOT_DIR.path('logs/data_transfer.log'),
+        },
+    },
+    'loggers': {
+        'parsing.data_transfer': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}

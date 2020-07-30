@@ -8,6 +8,9 @@ from .models import \
     RingoManufacturer, RingoProduct, RingoOptionValueDescription
 import time
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 def copy_data_from_opencart():
     """ Оперативно копирует нужные таблицы из БД Опенкарта в БД Парсинга.
@@ -54,10 +57,11 @@ def copy_data_from_opencart():
             end = time.time()
 
             print('Скопирована таблица', table_name, f'за {end - start} с.')
+            logger.info(f'The table {table_name} was copied for {end - start} sec.')
 
 
 def clear_foreignkeys():
-    """ Очищает таблицы от записей, не соответствующие внешнним ключам, после миграции.
+    """ Очищает таблицы от записей, не соответствующих внешнним ключам, после миграции.
     """
     Brand.objects.exclude(manufacturer__in=RingoManufacturer.objects.all()).delete()
     FileProductMapping.objects.exclude(product__in=RingoProduct.objects.all()).delete()
