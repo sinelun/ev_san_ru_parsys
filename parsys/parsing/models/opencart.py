@@ -77,6 +77,9 @@ class RingoProduct(models.Model):
     date_added = models.DateTimeField()
     date_modified = models.DateTimeField()
 
+    def link(self):
+        return f'http://ev-san.ru/index.php?route=product/product&product_id={self.pk}'
+
     objects = models.Manager()
     items = ProductQuerySet.as_manager()
 
