@@ -18,13 +18,13 @@ class RingoProductAdmin(admin.ModelAdmin):
     def get_name(self, obj):
         return obj.productdescription.name
 
+    get_name.admin_order_field = 'productdescription__name'
+    get_name.short_description = 'Наименование'
+
     def get_link(self, obj):
         return format_html('<a href="{}" title="{}" target="_blank">{}</a>', obj.link(), obj.link(), 'на сайт')
 
     get_link.short_description = 'Ссылка'
-
-    get_name.admin_order_field = 'productdescription__name'
-    get_name.short_description = 'Наименование'
 
     readonly_fields = []
 
