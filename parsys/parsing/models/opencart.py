@@ -72,7 +72,7 @@ class RingoProduct(models.Model):
     subtract = models.IntegerField()
     minimum = models.IntegerField()
     sort_order = models.IntegerField()
-    status = models.IntegerField()
+    status = models.IntegerField(verbose_name='Статус')
     viewed = models.IntegerField()
     date_added = models.DateTimeField()
     date_modified = models.DateTimeField()

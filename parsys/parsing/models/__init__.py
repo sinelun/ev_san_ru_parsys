@@ -6,5 +6,6 @@ from .site import *
 from .product import *
 from .mapping import *
 from .price import *
+from .mapping import *
 
 
