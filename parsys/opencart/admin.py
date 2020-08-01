@@ -1,11 +1,12 @@
 from django.contrib import admin
 from .models import RingoManufacturer, RingoProduct, RingoProductDescription, RingoProductOptionValue
+from django.utils.html import format_html
 
 
 @admin.register(RingoProduct)
 class RingoProductAdmin(admin.ModelAdmin):
-    list_display = ('product_id', 'manufacturer_id', 'model', 'get_name', 'price')
-    list_filter = ('manufacturer_id',)
+    list_display = ('product_id', 'manufacturer_id', 'model', 'get_name', 'get_link', 'status', 'price')
+    list_filter = ('status', 'manufacturer_id')
     list_per_page = 50
     ordering = ('manufacturer_id', 'productdescription__name')
     search_fields = ('model', 'productdescription__name')
@@ -16,6 +17,11 @@ class RingoProductAdmin(admin.ModelAdmin):
 
     def get_name(self, obj):
         return obj.productdescription.name
+
+    def get_link(self, obj):
+        return format_html('<a href="{}" title="{}" target="_blank">{}</a>', obj.link(), obj.link(), 'на сайт')
+
+    get_link.short_description = 'Ссылка'
 
     get_name.admin_order_field = 'productdescription__name'
     get_name.short_description = 'Наименование'

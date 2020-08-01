@@ -40,12 +40,12 @@ class RingoProduct(models.Model):
     product_id = models.AutoField(primary_key=True, verbose_name='Id товара')
     model = models.CharField(max_length=64, verbose_name='Артикул')
     sku = models.CharField(max_length=64, verbose_name='Код')
-    upc = models.CharField(max_length=12)
-    ean = models.CharField(max_length=14)
-    jan = models.CharField(max_length=13)
-    isbn = models.CharField(max_length=17)
-    mpn = models.CharField(max_length=64)
-    location = models.CharField(max_length=128)
+    upc = models.CharField(max_length=12, default='', blank=True)
+    ean = models.CharField(max_length=14, default='', blank=True)
+    jan = models.CharField(max_length=13, default='', blank=True)
+    isbn = models.CharField(max_length=17, default='', blank=True)
+    mpn = models.CharField(max_length=64, default='', blank=True)
+    location = models.CharField(max_length=128, default='', blank=True)
     quantity = models.IntegerField()
     stock_status_id = models.IntegerField()
     image = models.CharField(max_length=255, blank=True, null=True)
@@ -64,13 +64,16 @@ class RingoProduct(models.Model):
     subtract = models.IntegerField()
     minimum = models.IntegerField()
     sort_order = models.IntegerField()
-    status = models.IntegerField()
+    status = models.IntegerField(verbose_name='Статус')
     viewed = models.IntegerField()
     date_added = models.DateTimeField()
     date_modified = models.DateTimeField()
 
     def __str__(self):
         return str(self.product_id)
+
+    def link(self):
+        return f'http://ev-san.ru/index.php?route=product/product&product_id={self.pk}'
 
     class Meta:
         managed = False
