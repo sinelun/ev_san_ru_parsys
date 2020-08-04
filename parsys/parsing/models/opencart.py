@@ -120,10 +120,11 @@ class RingoProductDescription(models.Model):
 class RingoProductOptionValue(models.Model):
     product_option_value_id = models.AutoField(primary_key=True)
     product_option_id = models.IntegerField()
-    product_id = models.ForeignKey(RingoProductDescription, db_column='product_id', on_delete=models.PROTECT, verbose_name='Товар с данной опцией')
+    product_id = models.ForeignKey(RingoProductDescription, db_column='product_id', on_delete=models.PROTECT,
+                                   verbose_name='Товар с данной опцией')
     option_id = models.IntegerField()
     option_value_id = models.ForeignKey(RingoOptionValueDescription, db_column='option_value_id',
-                                        on_delete=models.PROTECT, verbose_name='Товар-опция')
+                                        on_delete=models.PROTECT, related_name='prices', verbose_name='Товар-опция')
     quantity = models.IntegerField()
     subtract = models.IntegerField()
     price = models.DecimalField(max_digits=15, decimal_places=4, verbose_name='Цена')
