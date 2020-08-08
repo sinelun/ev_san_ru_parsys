@@ -26,6 +26,7 @@ class SitePage(models.Model):
     site = models.ForeignKey(Site, on_delete=models.CASCADE, verbose_name='Сайт', related_name='pages')
     url = models.URLField(unique=True, verbose_name='Адрес страницы')
     html = models.TextField(null=True, blank=True, default=None, verbose_name='Последний HTML страницы')
+    level = models.SmallIntegerField(null=True, blank=True, default=None, verbose_name='Вложенность')
     created = models.DateTimeField(auto_now_add=True, verbose_name='Добавлен')
     updated = models.DateTimeField(auto_now=True, verbose_name='Оновлён')
 
