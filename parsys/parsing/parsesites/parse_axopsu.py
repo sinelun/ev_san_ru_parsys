@@ -3,28 +3,16 @@ from ..models import BrandSite, BrandSiteMapping
 import re
 
 import logging
-logger = logging.getLogger('debug')
-
-import sys
+logger = logging.getLogger(__name__)
 
 
 class ParseAxopSu(ParseSite):
+    """ Парсинг нтернет-магазина сантехники AXOR
     """
-    Парсинг нтернет-магазина сантехники AXOR
-    """
-
-    # site_default = 'https://axop.su'  # адрес сайта магазина, подвергающегося парсингу
-    # roots_default = ['/brand', ]  # корневые URL-ы
-    #
-    # soup_select_level_0_default = 'ul.letter_brands>li>a'
-    # soup_select_level_1_1_default = 'div.filter_block[min_title="По разделу"] > .filter_info > .brands a'
-    # soup_select_level_1_2_default = 'div.filter_block[min_title="По коллекциям"] > .filter_info > .brands a'
-    # soup_select_level_2_default = '.pager a'
-    # soup_select_level_3_default = '.product .info a'
 
     # Значения параметров по умолчанию (**kwargs)
     defaults = {
-        'site': 'https://axop.su',  # адрес сайта магазина, подвергающегося парсингу
+        'site_url': 'https://axop.su',  # адрес сайта магазина, подвергающегося парсингу
         'roots': ['/brand', ],  # корневые URL-ы
 
         # параметры для отладки
@@ -39,50 +27,25 @@ class ParseAxopSu(ParseSite):
         'soup_select_level_1_2': 'div.filter_block[min_title="По коллекциям"] > .filter_info > .brands a',
         'soup_select_level_2': '.pager a',
         'soup_select_level_3': '.product .info a',
+        'soup_select_product': 'div.card_info',
     }
 
     def __init__(self, **kwargs):
+        # обновление значений по-умолчанию значениями параметров без добавления
         self.defaults.update((k, kwargs[k]) for k in set(kwargs).intersection(self.defaults))
+        # обновление параметров объектов обновлёнными значениями по-умолчанию
         self.__dict__.update(self.defaults)
-        # print(self.site, 'dict: ', self.__dict__)
-        kwargs['site'] = self.site
+        # преобразование имён брендов к нижнему регистру с удалением пробелов по краям
+        self.brands = self.convert_brands(self.brands)
+
+        # параметры передаваемые в родительский конструктор
+        kwargs['site_url'] = self.site_url
         kwargs['roots'] = self.roots
-        self.brands = [x.strip().lower() for x in self.brands]
-        print('self.brands: ', self.brands)
+
         super().__init__(**kwargs)
 
-        # """ **kwargs: todo del
-        #         site - адрес сайта;
-        #         brands: list - бренды, которые будут парситься, если пустой,
-        #                         то будут парситься все сопоставленные бренды;
-        #         max_page_number - максимальное количество страниц 3-го уровня, которые будут парситься (для тестов);
-        #         parse_sections - забирать ссылки "По разделам" со страницы бренда
-        #         parse_collections - забирать ссылки "По коллекциям" со страницы бренда
-        # """
-        # kwargs['site'] = kwargs['site'] if 'site' in kwargs else self.site_default
-        # kwargs['roots'] = kwargs['roots'] if 'roots' in kwargs else self.roots_default
-
-        # Бренды, которые будут парсится
-        # self.brands = [x.strip().lower() for x in kwargs['brands']] \
-        #     if 'brands' in kwargs and isinstance(kwargs['brands'], list) else None
-
-        # Максимальное количество страниц пагинатора, которое будет парсится
-        # self.max_page_number = kwargs['max_page_number'] if 'max_page_number' in kwargs else 0
-
-        # Парсить по разделам?
-        # self.parse_sections = kwargs['parse_sections'] if 'parse_sections' in kwargs else True
-
-        # Парсить по коллекциям?
-        # self.parse_collections = kwargs['parse_collections'] if 'parse_collections' in kwargs else True
-
-        # CSS селекторы уровней
-        # self.soup_select_level_2 = kwargs['soup_select_level_2'] if 'soup_select_level_3' in kwargs \
-        #                             else self.soup_select_level_2_default
-        # self.soup_select_level_3 = kwargs['soup_select_level_3'] if 'soup_select_level_3' in kwargs \
-        #                             else self.soup_select_level_3_default
-
-    def parse_site(self):
-        return super().parse_site()
+    # def parse_site(self):
+    #     return super().parse_site()
 
     def parse_level_0(self):
         """Парсинг брендов из раздела https://axop.su/brand, адрес которого задан в self.roots"""
@@ -91,9 +54,9 @@ class ParseAxopSu(ParseSite):
         # Если не задан парсинг по отдельным брендам...
         if not self.brands:
             # ... взять бренды сопоставленные в модели BrandSiteMapping
-            brands = BrandSiteMapping.objects.filter(site=self.site) \
-                                        .exclude(site_brand='').values_list('site_brand', flat=True)
-            self.brands = [x.strip().lower() for x in brands]
+            brands = BrandSiteMapping.objects.select_related('site_brand').filter(site_brand__isnull=False)\
+                                                .values_list('site_brand__name', flat=True)
+            self.brands = self.convert_brands(brands)
         for brand in self.soup.select(self.soup_select_level_0):
             brand_name = brand.string.strip().lower()
             # Все бренды сайта записываются в модель BrandSite для помощи в сопоставлении брендов (BrandSiteMapping)
@@ -147,11 +110,6 @@ class ParseAxopSu(ParseSite):
         urls = []
         for link in self.soup.select(self.soup_select_level_3):
             urls.append(link['href'])
-        logger.info(f"""Level 3
-                        self.url: {self.url}
-                        urls: {urls}
-                        {self.soup.encode(sys.stdout.encoding, errors='replace')}
-                    """)
         return urls, True, bool(urls), False
 
     def parse_level_4(self):
@@ -174,7 +132,7 @@ class ParseAxopSu(ParseSite):
         self.data['price'] = 0
         self.data['old_price'] = 0
 
-        card_info = self.soup.select_one('div.card_info')
+        card_info = self.soup.select_one(self.soup_select_product)
 
         if not card_info:
             return None
@@ -221,17 +179,32 @@ class ParseAxopSu(ParseSite):
     def clear_price(price):
         return int(re.sub(r'\D', '', price))
 
+    @staticmethod
+    def convert_brands(brands):
+        if not brands:
+            return brands
+        return [x.strip().lower() for x in brands]
+
 
 """ --- FACADE --- """
 
 
-# Парсинг выделенных брендов
-def parse_axop_su_brands(brands, **kwargs):
-    p = ParseAxopSu(brands=brands)
+def parse_axop_su_site(**kwargs):
+    """ Парсинг всего сайта
+    """
+    kwargs.update({'parsing_type': 'sites'})
+    p = ParseAxopSu(**kwargs)
     return p.parse_site()
 
 
-""" ---- ТЕСТЫ --- """
+def parse_axop_su_brands(brands, **kwargs):
+    """ Парсинг выделенных брендов todo kwargs.update({'parsing_type': '???'}) да и вообще, надо ли парсить их отдельно?
+    """
+    p = ParseAxopSu(brands=brands, **kwargs)
+    return p.parse_brands()
+
+
+""" ---- TESTS --- """
 
 
 def parse_axop_su_test1():
@@ -259,12 +232,18 @@ def parse_axop_su_test4():
     p = ParseAxopSu(print_data=True)
     return p.parse_site()
 
+def parse_axop_su_test5():
+    print('-- Start parser_axop_su_test5: ALL PRODUCTS')
+    p = ParseAxopSu(print_data=True)
+    return p.parse_all_products()
+
 
 def parse_axop_su_tests():
     print('-- Start parse_axop_su_tests')
     # print('Test 1: ' + ('Yes' if parse_axop_su_test1() else 'No'))
     # print('Test 2: ' + ('Yes' if parse_axop_su_test2() else 'No'))
-    print('Test 3: ' + ('Yes' if parse_axop_su_test3() else 'No'))
+    # print('Test 3: ' + ('Yes' if parse_axop_su_test3() else 'No'))
     # print('Test 4: ' + ('Yes' if parse_axop_su_test4() else 'No'))
+    print('Test 5: ' + ('Yes' if parse_axop_su_test5() else 'No'))
 
 

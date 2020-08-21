@@ -62,7 +62,7 @@ class FileAdmin(admin.ModelAdmin):
     list_editable = ['file']
     fields = ['file', 'brand_cell', 'col_num_rows', 'col_sku', 'col_name', 'col_price', 'max_rows']
 
-    actions = [parse_files]
+    actions = [parse_files, 'delete_selected']
 
     def delete_queryset(self, request, queryset):
         for file in queryset:
@@ -83,6 +83,8 @@ class FileDataAdmin(admin.ModelAdmin):
     list_filter = ['parsing', 'brand']
     list_display_links = None
     search_fields = ('sku', 'name')
+
+    actions = ['delete_selected']
 
     def has_add_permission(self, request, obj=None):
         return False

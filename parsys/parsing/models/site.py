@@ -42,7 +42,8 @@ class SitePageParsing(models.Model):
     """ Техническая модель для процесса парсинга сайтов. """
 
     parsing = models.ForeignKey(Parsing, on_delete=models.CASCADE, verbose_name='Парсинг')
-    site_page = models.ForeignKey(SitePage, on_delete=models.CASCADE, verbose_name='Страница сайта')
+    site_page = models.ForeignKey(SitePage, on_delete=models.CASCADE,
+                                  related_name='parsingpages', verbose_name='Страница сайта')
     level = models.SmallIntegerField(null=True, blank=True, default=None, verbose_name='Вложенность')
     http = models.SmallIntegerField(null=True, blank=True, default=None, verbose_name='HTTP-код ответа')
     completed = models.BooleanField(default=False, verbose_name='Завершён')

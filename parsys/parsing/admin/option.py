@@ -57,3 +57,5 @@ class OptionMappingAdmin(admin.ModelAdmin):
 
     def site_product_name(self, obj):
         return obj.site_product if obj.site_product else None
+
+    actions = ['delete_selected']

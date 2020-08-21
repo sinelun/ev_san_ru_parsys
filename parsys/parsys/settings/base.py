@@ -166,12 +166,22 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': ROOT_DIR.path('logs/data_transfer.log'),
+            'filename': ROOT_DIR.path('logs/debug.log'),
         },
+        'parse_axopsu_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': ROOT_DIR.path('logs/parse_axopsu.log'),
+        }
     },
     'loggers': {
-        'parsing.data_transfer': {
+        'debug': {
             'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'parse_axopsu': {
+            'handlers': ['parse_axopsu_file'],
             'level': 'INFO',
             'propagate': True,
         },

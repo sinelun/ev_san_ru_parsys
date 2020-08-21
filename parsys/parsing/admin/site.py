@@ -9,6 +9,8 @@ class SiteAdmin(admin.ModelAdmin):
     list_display_links = None
     fields = []
 
+    actions = ['delete_selected']
+
     def has_add_permission(self, request, obj=None):
         return False
 
@@ -25,6 +27,8 @@ class SiteProductPage(admin.ModelAdmin):
     search_fields = ['sku', 'name', 'site_code']
     list_filter = ['brand']
     list_per_page = 25
+
+    actions = ['delete_selected']
 
     def has_add_permission(self, request, obj=None):
         return False

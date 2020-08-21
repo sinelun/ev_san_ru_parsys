@@ -1,5 +1,5 @@
 from django.db import models
-from parsing.validators import validate_file_extension
+from ..validators import validate_file_extension
 
 
 class File(models.Model):

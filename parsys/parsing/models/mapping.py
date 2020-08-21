@@ -28,8 +28,8 @@ class BrandSiteMapping(models.Model):
                                    verbose_name='Бренд на сайте')
 
     class Meta:
-        verbose_name = 'Сопоставление брендов с брендами сайтов'
-        verbose_name_plural = 'Сопоставление брендов с брендами сайтов'
+        verbose_name = 'Бренд'
+        verbose_name_plural = 'Бренды'
         ordering = ['brand']
 
 
