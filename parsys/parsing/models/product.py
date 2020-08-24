@@ -40,9 +40,7 @@ class FileData(ProductAbstract):
         Это также приведёт к установке actual_data в NULL в модели FileProduct.
     """
 
-    parsing = models.ForeignKey(Parsing, on_delete=models.CASCADE,
-                                verbose_name='Парсинг', related_name='%(class)s_related')
-    file = models.ForeignKey(File, on_delete=models.CASCADE, verbose_name='Файл')
+    file = models.ForeignKey(File, on_delete=models.CASCADE, related_name='data', verbose_name='Файл')
     sheet = models.CharField(max_length=60, verbose_name='Лист')
     row = models.PositiveIntegerField(blank=True, null=True, default=None, verbose_name='Строка')
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Цена')
@@ -51,7 +49,7 @@ class FileData(ProductAbstract):
     class Meta:
         verbose_name = 'Данные прайсов'
         verbose_name_plural = 'Данные прайсов'
-        ordering = ['-parsing__finish', 'brand', 'sheet', 'row']
+        ordering = ['file', 'brand', 'sheet', 'row']
 
 
 class FileProduct(models.Model):

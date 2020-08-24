@@ -1,4 +1,5 @@
 from django.db import models
+from .parsing import Parsing
 from ..validators import validate_file_extension
 
 
@@ -14,6 +15,9 @@ class File(models.Model):
     col_name = models.SmallIntegerField(default=3, verbose_name='Колонка с названием товара')
     col_price = models.SmallIntegerField(default=5, verbose_name='Колонка с ценой товара')
     uploaded = models.DateTimeField(auto_now=True, verbose_name='Загружен')
+    parsing = models.ForeignKey(Parsing, on_delete=models.CASCADE, default=None, blank=True, null=True,
+                                    related_name='files', verbose_name='Парсинг')
+    last_parsed_sheet = models.IntegerField(default=0, verbose_name='Последний обработанный лист')
     parsed = models.BooleanField(default=False, verbose_name='Обработан')
 
     def __str__(self):

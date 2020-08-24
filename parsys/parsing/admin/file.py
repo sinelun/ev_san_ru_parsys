@@ -8,6 +8,8 @@ import os
 def parse_files(modeladmin, request, queryset):
     """ Парсинг прайсов из файлов в формате xlsx.
     """
+    return
+
     parsing = Parsing(type='files')
     parsing.save()
     for file in queryset:
@@ -57,7 +59,7 @@ parse_files.short_description = 'Парсить выбранные файлы'
 
 @admin.register(File)
 class FileAdmin(admin.ModelAdmin):
-    list_display = ['file', 'uploaded', 'parsed']
+    list_display = ['file', 'uploaded', 'parsing', 'parsed']
     list_display_links = None
     list_editable = ['file']
     fields = ['file', 'brand_cell', 'col_num_rows', 'col_sku', 'col_name', 'col_price', 'max_rows']
@@ -79,8 +81,8 @@ class FileAdmin(admin.ModelAdmin):
 
 @admin.register(FileData)
 class FileDataAdmin(admin.ModelAdmin):
-    list_display = ['parsing', 'brand', 'row', 'sku', 'name', 'price', 'created']
-    list_filter = ['parsing', 'brand']
+    list_display = ['file', 'brand', 'row', 'sku', 'name', 'price', 'created']
+    list_filter = ['file', 'brand']
     list_display_links = None
     search_fields = ('sku', 'name')
 
