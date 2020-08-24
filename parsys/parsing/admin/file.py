@@ -1,11 +1,13 @@
 from django.contrib import admin
 from ..models import Parsing, File, FileData
+from ..parsefiles import ParseFiles
 from django.contrib import messages
 from openpyxl import load_workbook
 import os
 
 
-def parse_files(modeladmin, request, queryset):
+# todo del
+def __parse_files(modeladmin, request, queryset):
     """ Парсинг прайсов из файлов в формате xlsx.
     """
     return
@@ -52,6 +54,10 @@ def parse_files(modeladmin, request, queryset):
         file.parsed = True
         file.save()
         modeladmin.message_user(request, f'Файл {file} успешно обработан.', messages.SUCCESS)
+
+
+def parse_files(modeladmin, request, queryset):
+    ParseFiles.parse(None, modeladmin, request, queryset)
 
 
 parse_files.short_description = 'Парсить выбранные файлы'
