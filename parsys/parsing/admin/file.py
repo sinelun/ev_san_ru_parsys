@@ -1,63 +1,19 @@
 from django.contrib import admin
 from ..models import Parsing, File, FileData
 from ..parsefiles import ParseFiles
-from django.contrib import messages
-from openpyxl import load_workbook
 import os
 
 
-# todo del
-def __parse_files(modeladmin, request, queryset):
-    """ Парсинг прайсов из файлов в формате xlsx.
-    """
-    return
-
-    parsing = Parsing(type='files')
-    parsing.save()
-    for file in queryset:
-        if file.parsed:
-            modeladmin.message_user(request, f'Файл {file} уже был обработан ранее.', messages.WARNING)
-            continue
-        try:
-            wb = load_workbook(file.file.path, read_only=True)
-        except:
-            modeladmin.message_user(request, f'Невозможно прочитать файл {file}', messages.ERROR)
-            continue
-        for ws in wb:
-            bc = file.brand_cell.split('/')
-            brand = str(ws.cell(row=int(bc[0].strip()), column=int(bc[1].strip())).value)
-            if not brand:
-                continue
-            for x in range(1, file.max_rows):
-                try:
-                    v = str(ws.cell(row=x, column=file.col_num_rows).value)
-                    sku = str(ws.cell(row=x, column=file.col_sku).value)
-                    if v.isdigit() and sku:
-                        data = {
-                            'parsing': parsing,
-                            'file': file,
-                            'sheet': str(ws.title),
-                            'brand': brand,
-                            'row': int(v),
-                            'sku': sku,
-                            'name': str(ws.cell(row=x, column=file.col_name).value),
-                            'price': str(ws.cell(row=x, column=file.col_price).value),
-                        }
-                        print(data)
-                        FileData.objects.create(**data)
-                except:
-                    modeladmin.message_user(request,
-                                            f'Ошибка данных в cтроке {str(v)} в файле {file.file.path}',
-                                            messages.WARNING)
-        parsing.completed = True
-        parsing.save()
-        file.parsed = True
-        file.save()
-        modeladmin.message_user(request, f'Файл {file} успешно обработан.', messages.SUCCESS)
+import logging
+logger = logging.getLogger('debug')  # rename to do not log
 
 
 def parse_files(modeladmin, request, queryset):
-    ParseFiles.parse(None, modeladmin, request, queryset)
+    """ Действие (action) - парсинг, выбранных файлов-прайсов
+    """
+    logger.info(f'The action "parse_files" ran with queryset: -- {queryset} --')
+    pf = ParseFiles(None, modeladmin, request, queryset)
+    pf.parse()
 
 
 parse_files.short_description = 'Парсить выбранные файлы'

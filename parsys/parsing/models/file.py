@@ -18,6 +18,7 @@ class File(models.Model):
     parsing = models.ForeignKey(Parsing, on_delete=models.CASCADE, default=None, blank=True, null=True,
                                     related_name='files', verbose_name='Парсинг')
     last_parsed_sheet = models.IntegerField(default=0, verbose_name='Последний обработанный лист')
+    last_parsed_row = models.IntegerField(default=0, verbose_name='Последняя обработанная строка')
     parsed = models.BooleanField(default=False, verbose_name='Обработан')
 
     def __str__(self):
