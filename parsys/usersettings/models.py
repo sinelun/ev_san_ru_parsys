@@ -3,6 +3,7 @@ from django.db import models
 
 class UserSettingSection(models.Model):
     name = models.CharField(max_length=60, unique=True, verbose_name='Название')
+    slug = models.SlugField(max_length=20, unique=True)
 
     def __str__(self):
         return self.name
@@ -22,6 +23,7 @@ class UserSetting(models.Model):
     section = models.ForeignKey(UserSettingSection, on_delete=models.CASCADE,
                                 related_name='settings', verbose_name='Раздел')
     name = models.CharField(max_length=60, unique=True, verbose_name='Название')
+    slug = models.SlugField(max_length=20, unique=True)
     description = models.TextField(blank=True, default='', verbose_name='Описание')
     type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='str', blank=True, verbose_name='Тип значения')
     value = models.CharField(max_length=256, blank=True, default='', verbose_name='Значение')
