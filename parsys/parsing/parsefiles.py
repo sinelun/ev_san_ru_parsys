@@ -1,4 +1,5 @@
 from .models import Parsing, File, FileData
+from usersettings.models import UserSetting
 from openpyxl import load_workbook
 from django.contrib import messages
 import time
@@ -36,6 +37,10 @@ class ParseFiles:
             # Для сообщений в админ. панели
             self.modeladmin = modeladmin
             self.request = request
+
+            # Количество строк, обрабатываемых за одну сессию cron задания
+            pf_numrows = UserSetting.objects.filter(slug='pf_numrows').values_list('value', flat=True).first()
+            self.number_of_next_rows = int(pf_numrows) if pf_numrows else 200
 
     def parse(self):
         if self.do_nothing:
@@ -103,7 +108,7 @@ class ParseFiles:
             logger.info(f'The current worksheet is skipped because the brand is empty.')
             return
         # (todo settings) следующая порция строк
-        number_of_next_rows = 200;
+        number_of_next_rows = self.number_of_next_rows;
         logger.info(f'The number of the next rows has set to -- {number_of_next_rows} -- .')
         start_row = file.last_parsed_row + 1
         # Если параметр максимального количства строк меньше, чем номер предполагаемой последней строки...
