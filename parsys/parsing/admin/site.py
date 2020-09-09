@@ -1,6 +1,21 @@
 from django.contrib import admin
-from ..models import Site,SiteProductPage
+from ..models import Site, SiteProductPage
+from ..parsesites import parse_axop_su_site
 from django.contrib import messages
+
+
+import logging
+logger = logging.getLogger(__name__)
+
+
+def parse_site(modeladmin, request, queryset):
+    """ Действие (action) - парсинг сайта
+    """
+    logger.info(f'Запущено действие (action) из админки parse_site()')
+    parse_axop_su_site()
+
+
+parse_site.short_description = 'Парсить выбранный сайт'
 
 
 @admin.register(Site)
@@ -9,7 +24,7 @@ class SiteAdmin(admin.ModelAdmin):
     list_display_links = None
     fields = []
 
-    actions = ['delete_selected']
+    actions = [parse_site, 'delete_selected']
 
     def has_add_permission(self, request, obj=None):
         return False

@@ -5,7 +5,7 @@ import os
 
 
 import logging
-logger = logging.getLogger('debug')  # rename to do not log
+logger = logging.getLogger(__name__)
 
 
 def parse_files(modeladmin, request, queryset):
