@@ -163,27 +163,39 @@ MEDIA_ROOT = str(ROOT_DIR('files'))
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': ROOT_DIR.path('logs/debug.log'),
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {lineno} >> {message}',
+            'style': '{',
         },
-        'parse_axopsu_file': {
-            'level': 'INFO',
+        'simple': {
+            'format': '{levelname} {module} {lineno} >> {message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'file_parsing': {
+            'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': ROOT_DIR.path('logs/parse_axopsu.log'),
-        }
+            'filename': ROOT_DIR.path('logs/parsing.log'),
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
     },
     'loggers': {
-        'debug': {
-            'handlers': ['file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'parse_axopsu': {
-            'handlers': ['parse_axopsu_file'],
-            'level': 'INFO',
+        'parsing': {
+            'handlers': ['console', 'file_parsing'],
+            'level': 'DEBUG',
             'propagate': True,
         },
     },

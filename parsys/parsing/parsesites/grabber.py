@@ -2,9 +2,13 @@ from grab import Grab
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class Grabber:
-    """ Обёртка над Grab c использованием BeautifulSoup."""
+    """ Обёртка над Grab c использованием BeautifulSoup.
+    """
 
     def __init__(self, **kwargs):
         super().__init__()
@@ -19,19 +23,24 @@ class Grabber:
         """ "Грабит" данные по url;
             принимает целые (с адресом сайта) и не целые (относительные) url-ы;
             устанавливает текущие свойства;
-            возваращает False в случае "неудачного" кода ответа сервера, иначе - True
+            возваращает False в случае неудачи, иначе - True
         """
         self.url = self.check_url(url)
-        resp = self.grab.go(url)
+        try:
+            resp = self.grab.go(url)
+        except Exception as ex:
+            logger.error(f'Невозможно получить данные с -- {url} -- по причине: {ex}')
+            return False
         self.http = resp.code
         if self.check_http():
             self.html = resp.unicode_body()
             self.make_soup()
-
         return bool(self.soup)
 
     def check_url(self, url):
-        """ Просто подставляет адрес сайта к url-ам без него, пока без дополнительных проверок."""
+        """ Просто подставляет адрес сайта к url-ам без него,
+            todo пока без дополнительных проверок.
+        """
         u = urlparse(url)
         if u.scheme:
             return url
@@ -40,10 +49,19 @@ class Grabber:
         raise Exception('Bad URL or site is not set')
 
     def check_http(self):
-        """ Пока производит простейшую проверку статуса ответа. todo"""
-        if self.http < 400:
-            return True
-        return False
+        """ Производит простейшую проверку статуса ответа.
+            todo сложнее
+        """
+        result = None
+        if not self.http:
+            result = False
+        elif self.http < 400:
+            result = True
+        else:
+            result = False
+        if not result:
+            logger.warning(f'Плохой статус ответа: -- {self.http} -- ')
+        return result
 
     def make_soup(self):
         """ Получает "суп" из текущего HTML """

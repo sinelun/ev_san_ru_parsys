@@ -5,7 +5,7 @@ from django.contrib import messages
 import time
 
 import logging
-logger = logging.getLogger('debug')  # rename to do not log
+logger = logging.getLogger(__name__)
 
 
 class ParseFiles:

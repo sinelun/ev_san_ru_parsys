@@ -2,6 +2,8 @@ from .models import Parsing
 from datetime import datetime, timedelta
 from django.utils import timezone
 from .parsefiles import ParseFiles
+from .parsesites import parse_axop_su_site
+
 import os
 
 import logging
@@ -29,18 +31,20 @@ def continue_parsing():
         if last_parsing:
 
             logger.info(f'==========================================================================')
-            logger.info(f'The last unfinished parsing -- {last_parsing} -- last day -- {last_day} --')
+            logger.info(f'Есть незаконченный парсинг -- {last_parsing} -- типа -- {last_parsing.type} -- '
+                        f'за последний день -- {last_day} --')
 
             if last_parsing.type == 'files':
-                logger.info(f'Continue the last unfinished file parsing -- {last_parsing} --')
-                # Возобновляем последний незаконченный парсинг файлов
+                logger.info(f'Возобновлён последний незаконченный парсинг файлов -- {last_parsing} --')
                 pf = ParseFiles(last_parsing)
                 pf.parse()
             elif last_parsing.type == 'sites':
-                logger.info(f'Continue the last unfinished site parsing -- {last_parsing} --')
+                logger.info(f'Возобновлён последний незаконченный парсинг сайтов -- {last_parsing} --')
+                parse_axop_su_site()
             elif last_parsing.type == 'products':
-                logger.info(f'Continue the last unfinished product parsing -- {last_parsing} --')
+                logger.info(f'Возобновлён последний незаконченный парсинг товаров -- {last_parsing} --')
             else:
+                logger.error(f'Неизвестный тип парсинга -- {last_parsing.type} --')
                 raise Exception('Неизвестный тип парсинга!')
 
     except:
