@@ -31,8 +31,8 @@ class ParseSite(Grabber):
         else:
             logger.info(f'Парсинг запускается локально.')
 
-        # URL сайта без '/' на конце
-        self.site_url = kwargs['site_url'].rstrip('/') if 'site_url' in kwargs else None
+        # URL сайта без '/' на конце todo возможно удалить
+        # self.site_url = kwargs['site_url'].rstrip('/') if 'site_url' in kwargs else None
 
         # список URL-ов первого уровня, с которых начинается парсинг
         self.roots = kwargs['roots'] if 'roots' in kwargs else []
@@ -176,7 +176,7 @@ class ParseSite(Grabber):
             self.make_soup()
         # ... иначе, попробовать спарсить текущую страницу...
         else:
-            logger.debug(f'Попытка получить страницу -- {self.page} -- с помощью grab.')
+            logger.debug(f'Попытка получить страницу -- {self.page} -- с помощью grabber.')
             if not self.grab_url(self.page.url):
                 # ... в случае неудачи, выйти, записав причины в базу данных
                 logger.warning(f'Не удалось получить содержимое страницы -- {self.page} --.')

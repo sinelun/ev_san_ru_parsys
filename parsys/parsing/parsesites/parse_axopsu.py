@@ -273,9 +273,9 @@ def parse_axop_su_test5():
 
 def parse_axop_su_tests():
     logger.debug('==== Start parse_axop_su_tests')
-    print('Test 1: ' + ('Yes' if parse_axop_su_test1() else 'No'))
+    # print('Test 1: ' + ('Yes' if parse_axop_su_test1() else 'No'))
     # print('Test 2: ' + ('Yes' if parse_axop_su_test2() else 'No'))
-    # print('Test 3: ' + ('Yes' if parse_axop_su_test3() else 'No'))
+    print('Test 3: ' + ('Yes' if parse_axop_su_test3() else 'No'))
     # print('Test 4: ' + ('Yes' if parse_axop_su_test4() else 'No'))
     # print('Test 5: ' + ('Yes' if parse_axop_su_test5() else 'No'))
 

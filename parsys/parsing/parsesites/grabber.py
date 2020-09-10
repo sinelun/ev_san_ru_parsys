@@ -1,6 +1,7 @@
 from grab import Grab
-from bs4 import BeautifulSoup
+from urllib.request import urlopen
 from urllib.parse import urlparse
+from bs4 import BeautifulSoup
 
 import logging
 logger = logging.getLogger(__name__)
@@ -11,7 +12,11 @@ class Grabber:
     """
 
     def __init__(self, **kwargs):
-        super().__init__()
+        # super().__init__() # todo возможно удалить...
+
+        # URL сайта без '/' на конце
+        self.site_url = kwargs['site_url'].rstrip('/') if 'site_url' in kwargs else None
+
         self.url = None  # текущий URL
         self.http = None  # текущий код HTTP ответа
         self.html = None  # текущий HTML ответа
@@ -27,13 +32,20 @@ class Grabber:
         """
         self.url = self.check_url(url)
         try:
-            resp = self.grab.go(url)
-        except Exception as ex:
-            logger.error(f'Невозможно получить данные с -- {url} -- по причине: {ex}')
-            return False
-        self.http = resp.code
-        if self.check_http():
+            1/0
+            resp = self.grab.go(self.url)
+            self.http = resp.code
             self.html = resp.unicode_body()
+        except Exception as ex:
+            logger.debug(f'Невозможно получить данные с -- {self.url} -- c помощью grab по причине: {ex}')
+            try:
+                resp = urlopen(self.url)
+                self.http = resp.getcode()
+                self.html = resp
+            except Exception as ex:
+                logger.error(f'Невозможно вообще получить данные с -- {self.url} -- по причине: {ex}')
+                return False
+        if self.check_http():
             self.make_soup()
         return bool(self.soup)
 
@@ -72,17 +84,16 @@ class Grabber:
 
 
 def grabber_test1():
-    print('-- Start grabber_test1')
-    g = Grabber('https://axop.su')
-    print(g)
-    success = g.run_grab('/vanny/')
-    print(g.site, g.url, g.code, success)
-    return g.site == 'https://axop.su' and \
+    logger.debug('-- Start grabber_test1')
+    g = Grabber(site_url='https://axop.su')
+    logger.debug(f'''g = Grabber(site_url='https://axop.su') => -- {g} --''')
+    success = g.grab_url('/vanny/')
+    logger.debug(f'g.site_url: -- {g.site_url} --, g.url: -- {g.url} --, g.http: -- {g.http} --, success: -- {success} --')
+    return g.site_url == 'https://axop.su' and \
            g.url == 'https://axop.su/vanny/' and \
-           g.code == 200 and success is True
+           g.http == 200 and success is True
 
 
 def grabber_tests():
-    print('-- Start grabber_tests')
-    print('Test 1: ' + ('Yes' if grabber_test1() else 'No'))
-
+    logger.debug('-- Start grabber_tests')
+    logger.debug('Test 1: ' + ('Yes' if grabber_test1() else 'No'))
